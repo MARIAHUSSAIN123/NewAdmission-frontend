@@ -13,26 +13,47 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
 
+  // 🔄 Input Change
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
 
+  // 🚀 Submit Form
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage({ type: '', text: '' });
 
     try {
-      // Ensure your .env file has VITE_API_URL defined
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      // ✅ FINAL backend URL
+      const apiUrl = "https://newadmission-backend.vercel.app";
+
       const res = await axios.post(`${apiUrl}/api/admission`, formData);
-      
-      setMessage({ type: 'success', text: res.data.message || "Application submitted!" });
-      setFormData({ fullName: '', email: '', course: '', phone: '' });
+
+      setMessage({
+        type: 'success',
+        text: res.data.message || "Form submitted successfully!"
+      });
+
+      // 🔄 Reset form
+      setFormData({
+        fullName: '',
+        email: '',
+        course: '',
+        phone: ''
+      });
+
     } catch (err) {
-      setMessage({ 
-        type: 'error', 
-        text: err.response?.data?.message || "Submission failed. Please check your connection." 
+      console.error(err);
+
+      setMessage({
+        type: 'error',
+        text:
+          err.response?.data?.error ||
+          "Submission failed. Server ya connection issue."
       });
     } finally {
       setLoading(false);
@@ -42,18 +63,24 @@ function App() {
   return (
     <div className="admission-page">
       <div className="form-card">
+
         <div className="title-section">
           <h1>Admission Portal</h1>
-          <p style={{ color: '#64748b', marginTop: '5px' }}>MERN Stack Project</p>
+          <p style={{ color: '#64748b', marginTop: '5px' }}>
+            MERN Stack Project
+          </p>
         </div>
 
+        {/* ✅ Message */}
         {message.text && (
           <div className={`alert ${message.type === 'success' ? 'success' : 'error'}`}>
             {message.text}
           </div>
         )}
 
+        {/* 📋 Form */}
         <form onSubmit={handleSubmit}>
+
           <div className="form-group">
             <label>Full Name</label>
             <input
@@ -111,6 +138,7 @@ function App() {
           <button type="submit" className="submit-btn" disabled={loading}>
             {loading ? "Submitting..." : "Apply Now"}
           </button>
+
         </form>
       </div>
     </div>
